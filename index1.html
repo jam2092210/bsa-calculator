@@ -1,0 +1,399 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>BSA IBW Calculator</title>
+
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#ffffff">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+
+  <style>
+    :root {
+      --bg-color: #f4f7fa;
+      --card-color: #ffffff;
+      --border-color: #d8e0e8;
+
+      --primary-color: #1f6fb2;
+      --secondary-color: #2fa4a9;
+
+      --text-primary: #1f2933;
+      --text-secondary: #5f6c7b;
+
+      --success-bg: #e6f4f1;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, Arial, sans-serif;
+      background: var(--bg-color);
+      color: var(--text-primary);
+      max-width: 680px;
+      margin: 24px auto;
+      padding: 0 16px;
+    }
+
+    h2 {
+      color: var(--primary-color);
+      margin: 0 0 8px 0;
+      text-align: center;
+    }
+
+    h3 {
+      color: var(--primary-color);
+    }
+
+    label {
+      display: block;
+      margin-top: 12px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    input,
+    select {
+      width: 100%;
+      padding: 10px;
+      margin-top: 6px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      background: #ffffff;
+      color: var(--text-primary);
+    }
+
+    input:focus,
+    select:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 2px rgba(31, 111, 178, 0.15);
+    }
+
+    input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--primary-color);
+    }
+
+    .card {
+      margin-top: 18px;
+      padding: 14px;
+      background: var(--card-color);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+    }
+
+    .row {
+      display: flex;
+      gap: 12px;
+      margin-top: 10px;
+    }
+
+    .row > div {
+      flex: 1;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .note {
+      margin-top: 8px;
+      font-size: 13px;
+      color: var(--text-secondary);
+      line-height: 1.4;
+    }
+
+    .out {
+      background: linear-gradient(180deg, #ffffff 0%, #f9fbfd 100%);
+    }
+
+    .out div {
+      margin: 6px 0;
+    }
+
+    .out strong {
+      color: var(--secondary-color);
+    }
+
+    .disclaimer {
+      margin-top: 24px;
+      padding: 16px;
+      background: var(--success-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .disclaimer h3 {
+      margin-top: 0;
+      color: var(--primary-color);
+    }
+  </style>
+</head>
+
+<body>
+  <h2>Megan's BSA Calculator</h2>
+
+  <label for="units">Units</label>
+  <select id="units">
+    <option value="metric">Metric cm kg</option>
+    <option value="english">SAE in lb</option>
+  </select>
+
+  <label for="sex">Sex</label>
+  <select id="sex">
+    <option value="female">Female</option>
+    <option value="male">Male</option>
+  </select>
+
+  <label for="height">Height</label>
+  <input id="height" type="number" step="0.01" placeholder="cm or inches" />
+
+  <label for="weight">Weight</label>
+  <input id="weight" type="number" step="0.01" placeholder="kg or pounds" />
+
+  <div class="card">
+    <label style="margin-top: 0;">
+      <input id="agree" type="checkbox" />
+      I understand and agree
+    </label>
+    <div class="note">
+      Results remain hidden until you acknowledge the disclaimer below.
+    </div>
+  </div>
+
+  <div id="output" class="card out hidden">
+    <div>BSA: —</div>
+    <div>IBW: —</div>
+    <div>Adjusted weight: —</div>
+  </div>
+
+  <div class="disclaimer">
+    <h3>Medical Disclaimer</h3>
+    <p>
+      This calculator is provided for educational and informational purposes only.
+      It is not intended to replace clinical judgment or professional medical advice for
+      diagnosis or treatment. Calculations are based on standard reference formulas
+      and may not be appropriate for all patients or clinical situations.
+    </p>
+    <p>
+      Users are responsible for verifying results and using their own clinical
+      judgment. Always consult appropriate medical references and institutional
+      policies before making clinical decisions. The creators of this tool assume
+      no liability for the use or misuse of this calculator.
+    </p>
+  </div>
+
+  <div class="card">
+    <h3 style="margin: 0 0 6px 0;">Unit Converter</h3>
+    <div class="note" style="margin-top: 0;">
+      Convert Metric and SAE units both directions.
+    </div>
+
+    <div class="row">
+      <div>
+        <label for="convValue">Value</label>
+        <input id="convValue" type="number" step="0.0001" placeholder="Enter a number" />
+      </div>
+      <div>
+        <label for="convType">Type</label>
+        <select id="convType">
+          <option value="cm_in">Length cm and in</option>
+          <option value="kg_lb">Weight kg and lb</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="row">
+      <div>
+        <label for="convFrom">From</label>
+        <select id="convFrom"></select>
+      </div>
+      <div>
+        <label for="convTo">To</label>
+        <select id="convTo"></select>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top: 12px;">
+      <div id="convResult">Result: —</div>
+      <div class="note" id="convHint"></div>
+    </div>
+  </div>
+
+  <script>
+    const KG_PER_LB = 1 / 2.20462262;
+    const CM_PER_IN = 2.54;
+
+    function round(value, decimals) {
+      const factor = Math.pow(10, decimals);
+      return Math.round(value * factor) / factor;
+    }
+
+    function calcBSA(heightCm, weightKg) {
+      return Math.sqrt((heightCm * weightKg) / 3600);
+    }
+
+    function calcIBW(heightIn, actualKg, sex) {
+      let ibw;
+
+      if (sex === "female") {
+        if (heightIn >= 60) ibw = 45.5 + (heightIn - 60) * 2.3;
+        else ibw = 45.5 - (60 - heightIn) * 0.758;
+      } else {
+        if (heightIn >= 60) ibw = 50 + (heightIn - 60) * 2.3;
+        else ibw = 50 - (60 - heightIn) * 0.833;
+      }
+
+      return Math.min(ibw, actualKg);
+    }
+
+    function calcAdjusted(actualKg, ibwKg) {
+      return ibwKg + 0.25 * (actualKg - ibwKg);
+    }
+
+    function setOutputVisibility() {
+      const agreed = document.getElementById("agree").checked;
+      document.getElementById("output").classList.toggle("hidden", !agreed);
+    }
+
+    function compute() {
+      const agreed = document.getElementById("agree").checked;
+      const out = document.getElementById("output");
+
+      if (!agreed) {
+        out.innerHTML = "<div>BSA: —</div><div>IBW: —</div><div>Adjusted weight: —</div>";
+        return;
+      }
+
+      const units = document.getElementById("units").value;
+      const sex = document.getElementById("sex").value;
+      const h = parseFloat(document.getElementById("height").value);
+      const w = parseFloat(document.getElementById("weight").value);
+
+      if (!isFinite(h) || !isFinite(w) || h <= 0 || w <= 0) {
+        out.innerHTML = "<div>BSA: —</div><div>IBW: —</div><div>Adjusted weight: —</div>";
+        return;
+      }
+
+      let heightCm, heightIn, weightKg;
+
+      if (units === "metric") {
+        heightCm = h;
+        weightKg = w;
+        heightIn = heightCm / CM_PER_IN;
+      } else {
+        heightIn = h;
+        weightKg = w * KG_PER_LB;
+        heightCm = heightIn * CM_PER_IN;
+      }
+
+      const ibwKg = calcIBW(heightIn, weightKg, sex);
+      const adjKg = calcAdjusted(weightKg, ibwKg);
+      const bsa = calcBSA(heightCm, adjKg);
+
+      out.innerHTML = `
+        <div><strong>BSA using adjusted body weight</strong>: ${round(bsa, 2)} m²</div>
+        <div><strong>Actual weight</strong>: ${round(weightKg, 1)} kg</div>
+        <div><strong>IBW</strong>: ${round(ibwKg, 1)} kg</div>
+        <div><strong>Adjusted weight</strong>: ${round(adjKg, 1)} kg</div>
+      `;
+    }
+
+    const converterTypes = {
+      cm_in: { units: ["cm", "in"], hint: "1 inch equals 2.54 cm" },
+      kg_lb: { units: ["kg", "lb"], hint: "1 kg equals 2.20462262 lb" }
+    };
+
+    function setConverterOptions() {
+      const type = document.getElementById("convType").value;
+      const fromSel = document.getElementById("convFrom");
+      const toSel = document.getElementById("convTo");
+
+      fromSel.innerHTML = "";
+      toSel.innerHTML = "";
+
+      converterTypes[type].units.forEach(u => {
+        const opt1 = document.createElement("option");
+        opt1.value = u;
+        opt1.textContent = u;
+        fromSel.appendChild(opt1);
+
+        const opt2 = document.createElement("option");
+        opt2.value = u;
+        opt2.textContent = u;
+        toSel.appendChild(opt2);
+      });
+
+      fromSel.value = converterTypes[type].units[0];
+      toSel.value = converterTypes[type].units[1];
+
+      document.getElementById("convHint").textContent = converterTypes[type].hint;
+      updateConverter();
+    }
+
+    function convertValue(type, value, fromUnit, toUnit) {
+      if (!isFinite(value)) return null;
+      if (fromUnit === toUnit) return value;
+
+      if (type === "cm_in") {
+        if (fromUnit === "cm") return value / CM_PER_IN;
+        return value * CM_PER_IN;
+      }
+
+      if (type === "kg_lb") {
+        if (fromUnit === "kg") return value / KG_PER_LB;
+        return value * KG_PER_LB;
+      }
+
+      return null;
+    }
+
+    function updateConverter() {
+      const valueRaw = document.getElementById("convValue").value;
+      const value = parseFloat(valueRaw);
+      const type = document.getElementById("convType").value;
+      const fromUnit = document.getElementById("convFrom").value;
+      const toUnit = document.getElementById("convTo").value;
+      const out = document.getElementById("convResult");
+
+      if (valueRaw === "" || !isFinite(value)) {
+        out.textContent = "Result: —";
+        return;
+      }
+
+      const result = convertValue(type, value, fromUnit, toUnit);
+      out.textContent = result === null ? "Result: —" : `Result: ${round(result, 4)} ${toUnit}`;
+    }
+
+    document.getElementById("units").addEventListener("change", compute);
+    document.getElementById("sex").addEventListener("change", compute);
+    document.getElementById("height").addEventListener("input", compute);
+    document.getElementById("weight").addEventListener("input", compute);
+
+    document.getElementById("agree").addEventListener("change", () => {
+      setOutputVisibility();
+      compute();
+    });
+
+    document.getElementById("convValue").addEventListener("input", updateConverter);
+    document.getElementById("convType").addEventListener("change", setConverterOptions);
+    document.getElementById("convFrom").addEventListener("change", updateConverter);
+    document.getElementById("convTo").addEventListener("change", updateConverter);
+
+    setOutputVisibility();
+    setConverterOptions();
+    updateConverter();
+
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("./serviceworker.js");
+      });
+    }
+  </script>
+</body>
+</html>
